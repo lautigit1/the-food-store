@@ -25,7 +25,7 @@ def login(credentials: LoginRequest, service: AuthService = Depends(get_auth_ser
     except AppException as e:
         raise HTTPException(status_code=e.status_code, detail=e.message)
 
-@router.post("/register", response_model=UserResponse)
+@router.post("/register", response_model=UserResponse, description="Funcionalidad preparada para registro de usuarios. (No utilizada actualmente en el flujo principal del frontend).")
 def register(data: UserCreate, service: AuthService = Depends(get_auth_service)):
     try:
         return service.register_user(data)

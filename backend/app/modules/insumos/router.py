@@ -62,7 +62,7 @@ def update_insumo_partial(id: int, data: InsumoUpdate, service: InsumoService = 
     except AppException as e:
         raise HTTPException(status_code=e.status_code, detail=e.message)
 
-@router.delete("/{id}", response_model=InsumoResponse)
+@router.delete("/{id}", response_model=InsumoResponse, description="Realiza baja lógica del insumo cambiando su estado a Inactivo.")
 def delete_insumo(id: int, service: InsumoService = Depends(get_insumo_service)):
     try:
         return service.logical_delete(id)
