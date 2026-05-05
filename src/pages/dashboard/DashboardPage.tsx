@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Package, AlertTriangle, TrendingUp, ArrowRight, LayoutDashboard } from "lucide-react";
 import { DashboardCard } from "@/components/admin/DashboardCard";
@@ -24,7 +25,22 @@ function SectionLabel({ label, code }: { label: string; code: string }) {
 export function DashboardPage() {
   const user = getCurrentUser();
   const navigate = useNavigate();
-  const insumos = getInsumos();
+  const [insumos, setInsumos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInsumos = async () => {
+      try {
+        const data = await getInsumos();
+        setInsumos(data);
+      } catch (error) {
+        console.error("Error fetching insumos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInsumos();
+  }, []);
 
   const total = insumos.length;
   const activos = insumos.filter((i) => i.estado === "Activo").length;
@@ -88,6 +104,11 @@ export function DashboardPage() {
       </div>
 
       {/* ── Métricas ──────────────────────────────────────────────── */}
+      {loading ? (
+        <div className="text-center py-10">
+          <p className="text-xs font-mono text-white/50 tracking-widest">Cargando métricas...</p>
+        </div>
+      ) : (
       <div>
         <SectionLabel label="Métricas" code="01" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -124,6 +145,7 @@ export function DashboardPage() {
           />
         </div>
       </div>
+      )}
 
       {/* ── Acciones y alertas ────────────────────────────────────── */}
       <div>

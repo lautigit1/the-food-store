@@ -98,11 +98,13 @@ function MagneticLink({
   index,
   onHover,
   isOpen,
+  onClose,
 }: {
   label: string;
   index: number;
   onHover: (label: string | null) => void;
   isOpen: boolean;
+  onClose: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
@@ -128,6 +130,16 @@ function MagneticLink({
   const fromX = index % 2 === 0 ? "-8vw" : "8vw";
   const displayLabel = NAV_LABELS[label] || label;
 
+  const NAV_ROUTES: Record<string, string> = {
+    Menu: "menu",
+    About: "nosotros",
+    Experience: "experiencia",
+    Reservations: "reservas",
+    Contact: "contacto",
+  };
+
+  const targetPath = `/${NAV_ROUTES[label] || label.toLowerCase()}`;
+
   return (
     <motion.div
       ref={ref}
@@ -148,40 +160,41 @@ function MagneticLink({
         ease: [0.76, 0, 0.24, 1],
       }}
     >
-      <motion.a
-        href={`#${label.toLowerCase()}`}
+      <motion.div
         style={{ x: sx, y: sy }}
         className="block relative"
       >
-        {/* Number */}
-        <span
-          className="absolute -left-2 top-1/2 -translate-y-1/2 text-xs text-white/20 font-mono tracking-widest"
-          style={{ writingMode: "vertical-rl" }}
-        >
-          0{index + 1}
-        </span>
+        <Link to={targetPath} className="block relative" onClick={() => { onHover(null); onClose(); }}>
+          {/* Number */}
+          <span
+            className="absolute -left-2 top-1/2 -translate-y-1/2 text-xs text-white/20 font-mono tracking-widest"
+            style={{ writingMode: "vertical-rl" }}
+          >
+            0{index + 1}
+          </span>
 
-        {/* Main text */}
-        <span
-          className="block text-[7vw] font-bold leading-[0.85] tracking-tight text-white transition-colors duration-300 group-hover:text-transparent"
-          style={{
-            fontFamily: "'Playfair Display', serif",
-            WebkitTextStroke: "1px rgba(248,248,248,0.9)",
-          }}
-        >
-          {displayLabel}
-        </span>
+          {/* Main text */}
+          <span
+            className="block text-[7vw] font-bold leading-[0.85] tracking-tight text-white transition-colors duration-300 group-hover:text-transparent"
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              WebkitTextStroke: "1px rgba(248,248,248,0.9)",
+            }}
+          >
+            {displayLabel}
+          </span>
 
-        {/* Ghost fill on hover */}
-        <motion.span
-          className="absolute inset-0 block text-[7vw] font-bold leading-[0.85] tracking-tight text-white pointer-events-none overflow-hidden"
-          style={{ fontFamily: "'Playfair Display', serif", clipPath: "inset(0 100% 0 0)" }}
-          whileHover={{ clipPath: "inset(0 0% 0 0)" }}
-          transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
-        >
-          {displayLabel}
-        </motion.span>
-      </motion.a>
+          {/* Ghost fill on hover */}
+          <motion.span
+            className="absolute inset-0 block text-[7vw] font-bold leading-[0.85] tracking-tight text-white pointer-events-none overflow-hidden"
+            style={{ fontFamily: "'Playfair Display', serif", clipPath: "inset(0 100% 0 0)" }}
+            whileHover={{ clipPath: "inset(0 0% 0 0)" }}
+            transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
+          >
+            {displayLabel}
+          </motion.span>
+        </Link>
+      </motion.div>
 
       {/* Bottom rule */}
       <motion.div
@@ -198,7 +211,7 @@ function MagneticLink({
 // ─── Full-screen overlay menu ────────────────────────────────────────────────
 const NAV_ITEMS = ["Menu", "About", "Experience", "Reservations", "Contact"];
 
-function FullScreenMenu({ open }: { open: boolean }) {
+function FullScreenMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   const activeBg = hoveredItem ? PANEL_COLORS[hoveredItem] : "#0B0B0B";
@@ -239,6 +252,7 @@ function FullScreenMenu({ open }: { open: boolean }) {
                   index={i}
                   onHover={setHoveredItem}
                   isOpen={open}
+                  onClose={onClose}
                 />
               ))}
             </div>
@@ -365,7 +379,7 @@ export function Navbar() {
       </motion.div>
 
       {/* Full screen overlay */}
-      <FullScreenMenu open={open} />
+      <FullScreenMenu open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

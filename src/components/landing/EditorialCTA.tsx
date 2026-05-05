@@ -4,7 +4,7 @@ import { useRef } from "react";
 const INFO = [
   {
     label: "Ubicación",
-    lines: ["123 Avenida Gastronómica", "Nueva York, NY 10001"],
+    lines: ["123 Palermo Soho", "Buenos Aires, BSAS 10001"],
     accent: "#FF5A00",
   },
   {

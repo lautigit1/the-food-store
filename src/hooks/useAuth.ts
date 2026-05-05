@@ -1,29 +1,47 @@
 import { useState, useCallback } from "react";
-import type { AuthUser } from "@/features/auth/types/auth.types";
+import type { AuthUser, LoginCredentials, RegisterCredentials } from "@/features/auth/types/auth.types";
 import {
   login as authLogin,
   logout as authLogout,
+  register as authRegister,
   getCurrentUser,
 } from "@/features/auth/services/authService";
-import type { LoginCredentials } from "@/features/auth/types/auth.types";
 
 interface UseAuthReturn {
   user: AuthUser | null;
   isAuthenticated: boolean;
-  login: (credentials: LoginCredentials) => boolean;
+  login: (credentials: LoginCredentials) => Promise<boolean>;
+  register: (credentials: RegisterCredentials) => Promise<boolean>;
   logout: () => void;
 }
 
 export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<AuthUser | null>(() => getCurrentUser());
 
-  const login = useCallback((credentials: LoginCredentials): boolean => {
-    const result = authLogin(credentials);
-    if (result) {
-      setUser(result);
-      return true;
+  const login = useCallback(async (credentials: LoginCredentials): Promise<boolean> => {
+    try {
+      const result = await authLogin(credentials);
+      if (result) {
+        setUser(result);
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
     }
-    return false;
+  }, []);
+
+  const register = useCallback(async (credentials: RegisterCredentials): Promise<boolean> => {
+    try {
+      const result = await authRegister(credentials);
+      if (result) {
+        setUser(result);
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
   }, []);
 
   const logout = useCallback(() => {
@@ -35,6 +53,7 @@ export function useAuth(): UseAuthReturn {
     user,
     isAuthenticated: user !== null,
     login,
+    register,
     logout,
   };
 }

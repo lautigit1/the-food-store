@@ -2,94 +2,69 @@ import type { Insumo, InsumoFormData } from "../types/insumo.types";
 import { INSUMOS_INICIALES } from "../data/insumosMock";
 import { todayISO } from "@/utils/dateUtils";
 
-const STORAGE_KEY = "the_food_store_insumos";
+import { fetchApi } from "@/shared/api/apiClient";
 
-function cargarDesdeStorage(): Insumo[] {
+export async function getInsumos(): Promise<Insumo[]> {
+  return fetchApi<Insumo[]>("/insumos");
+}
+
+export async function getInsumoById(id: number): Promise<Insumo | undefined> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as Insumo[];
+    return await fetchApi<Insumo>(`/insumos/${id}`);
   } catch {
-    // fall through
+    return undefined;
   }
-  // Primera vez: cargar mock y persistir
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(INSUMOS_INICIALES));
-  return INSUMOS_INICIALES;
 }
 
-function guardarEnStorage(insumos: Insumo[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(insumos));
+export async function createInsumo(data: InsumoFormData): Promise<Insumo> {
+  return fetchApi<Insumo>("/insumos", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 }
 
-function generarId(insumos: Insumo[]): number {
-  if (insumos.length === 0) return 1;
-  return Math.max(...insumos.map((i) => i.id)) + 1;
+export async function updateInsumo(id: number, data: InsumoFormData): Promise<Insumo | null> {
+  try {
+    return await fetchApi<Insumo>(`/insumos/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  } catch {
+    return null;
+  }
 }
 
-// ─── API pública ──────────────────────────────────────────────────────────────
-
-export function getInsumos(): Insumo[] {
-  return cargarDesdeStorage();
-}
-
-export function getInsumoById(id: number): Insumo | undefined {
-  return cargarDesdeStorage().find((i) => i.id === id);
-}
-
-export function createInsumo(data: InsumoFormData): Insumo {
-  const insumos = cargarDesdeStorage();
-  const nuevo: Insumo = {
-    ...data,
-    id: generarId(insumos),
-    fechaAlta: todayISO(),
-  };
-  const actualizado = [...insumos, nuevo];
-  guardarEnStorage(actualizado);
-  return nuevo;
-}
-
-export function updateInsumo(id: number, data: InsumoFormData): Insumo | null {
-  const insumos = cargarDesdeStorage();
-  const index = insumos.findIndex((i) => i.id === id);
-  if (index === -1) return null;
-
-  const actualizado: Insumo = {
-    ...insumos[index],
-    ...data,
-    id,
-  };
-  insumos[index] = actualizado;
-  guardarEnStorage(insumos);
-  return actualizado;
-}
-
-export function deleteInsumo(id: number): boolean {
+export async function deleteInsumo(id: number): Promise<boolean> {
   return bajaLogicaInsumo(id);
 }
 
 /** Baja LÓGICA: cambia estado a "Inactivo" sin eliminar el registro. */
-export function bajaLogicaInsumo(id: number): boolean {
-  const insumos = cargarDesdeStorage();
-  const index = insumos.findIndex((i) => i.id === id);
-  if (index === -1) return false;
-  insumos[index] = { ...insumos[index], estado: "Inactivo" };
-  guardarEnStorage(insumos);
-  return true;
+export async function bajaLogicaInsumo(id: number): Promise<boolean> {
+  try {
+    await fetchApi(`/insumos/${id}`, {
+      method: "DELETE",
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /** Reactiva un insumo dado de baja lógica. */
-export function reactivarInsumo(id: number): boolean {
-  const insumos = cargarDesdeStorage();
-  const index = insumos.findIndex((i) => i.id === id);
-  if (index === -1) return false;
-  insumos[index] = { ...insumos[index], estado: "Activo" };
-  guardarEnStorage(insumos);
-  return true;
+export async function reactivarInsumo(id: number): Promise<boolean> {
+  try {
+    await fetchApi(`/insumos/${id}/reactivar`, {
+      method: "PATCH",
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
- * Resetea los insumos al estado inicial (mock).
- * Útil para desarrollo/demo.
+ * Obtiene el resumen de estadísticas.
  */
-export function resetInsumosMock(): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(INSUMOS_INICIALES));
+export async function getInsumosStats(): Promise<any> {
+  return fetchApi("/insumos/stats/resumen");
 }

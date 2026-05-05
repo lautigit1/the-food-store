@@ -40,3 +40,13 @@ desktop.ini
 
 # Misc
 *.local
+
+# Python / Backend
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/**/*.pyo
+backend/.env
+*.db
+*.sqlite3

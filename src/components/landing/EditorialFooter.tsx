@@ -8,7 +8,7 @@ const TICKER_WORDS = [
   "◆",
   "EST. 2026",
   "◆",
-  "NUEVA YORK",
+  "PALERMO SOHO • BUENOS AIRES",
   "◆",
   "ABIERTO MAR–SAB",
   "◆",
@@ -61,6 +61,19 @@ function OpenStatus() {
     </div>
   );
 }
+
+import { Link } from "react-router";
+
+const NAV_ROUTES: Record<string, string> = {
+  "Menú": "/menu",
+  "Reservas": "/reservas",
+  "Nosotros": "/nosotros",
+  "Contacto": "/contacto",
+  "Empleo": "/empleo",
+  "Prensa": "/prensa",
+  "Privacidad": "/privacidad",
+  "Términos": "/terminos",
+};
 
 export function EditorialFooter() {
   return (
@@ -194,15 +207,16 @@ export function EditorialFooter() {
             <ul className="space-y-4">
               {["Menú", "Reservas", "Nosotros", "Contacto"].map((link) => (
                 <li key={link}>
-                  <motion.a
-                    href="#"
-                    className="text-[#F8F8F8]/60 hover:text-[#F8F8F8] transition-colors duration-300 text-sm flex items-center gap-3 group"
-                    whileHover={{ x: 6 }}
-                    transition={{ duration: 0.2 }}
+                  <Link
+                    to={NAV_ROUTES[link]}
+                    className="text-[#F8F8F8]/60 hover:text-[#F8F8F8] transition-colors duration-300 text-sm flex items-center gap-3 group block"
                   >
-                    <span className="w-4 h-[1px] bg-[#FF5A00] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <motion.span
+                      className="w-4 h-[1px] bg-[#FF5A00] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      whileHover={{ x: 6 }}
+                    />
                     {link}
-                  </motion.a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -221,15 +235,16 @@ export function EditorialFooter() {
             <ul className="space-y-4">
               {["Empleo", "Prensa", "Privacidad", "Términos"].map((link) => (
                 <li key={link}>
-                  <motion.a
-                    href="#"
-                    className="text-[#F8F8F8]/60 hover:text-[#F8F8F8] transition-colors duration-300 text-sm flex items-center gap-3 group"
-                    whileHover={{ x: 6 }}
-                    transition={{ duration: 0.2 }}
+                  <Link
+                    to={NAV_ROUTES[link]}
+                    className="text-[#F8F8F8]/60 hover:text-[#F8F8F8] transition-colors duration-300 text-sm flex items-center gap-3 group block"
                   >
-                    <span className="w-4 h-[1px] bg-[#FF5A00] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <motion.span
+                      className="w-4 h-[1px] bg-[#FF5A00] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      whileHover={{ x: 6 }}
+                    />
                     {link}
-                  </motion.a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -247,9 +262,9 @@ export function EditorialFooter() {
             </h4>
             <address className="not-italic space-y-4 text-sm text-[#F8F8F8]/50" style={{ fontFamily: "'Inter', sans-serif" }}>
               <p>
-                123 Av. Gastronómica
+                123 Palermo Soho
                 <br />
-                Nueva York, NY 10001
+                Buenos Aires, BSAS 10001
               </p>
               <p>
                 Mar–Sáb

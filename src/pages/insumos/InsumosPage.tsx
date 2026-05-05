@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Plus, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InsumoStats } from "@/features/insumos/components/InsumoStats";
@@ -225,8 +225,13 @@ function ConfirmBajaModal({ insumo, onConfirm, onCancel }: ConfirmBajaModalProps
 
 // ─── Página principal ─────────────────────────────────────────────────────────
 export function InsumosPage() {
-  const [insumos, setInsumos] = useState<Insumo[]>(() => getInsumos());
+  const [insumos, setInsumos] = useState<Insumo[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<InsumoFiltersState>(EMPTY_FILTERS);
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   // Modal states
   const [formOpen, setFormOpen] = useState(false);
@@ -261,7 +266,17 @@ export function InsumosPage() {
   const pagination = usePagination(filteredInsumos, 10);
 
   // ─── Handlers ─────────────────────────────────────────────────────────────
-  const refresh = () => setInsumos(getInsumos());
+  const refresh = async () => {
+    setLoading(true);
+    try {
+      const data = await getInsumos();
+      setInsumos(data);
+    } catch (error) {
+      console.error("Error fetching insumos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCreate = () => {
     setSelectedInsumo(null);
@@ -283,27 +298,27 @@ export function InsumosPage() {
     setBajaOpen(true);
   };
 
-  const handleConfirmBaja = () => {
+  const handleConfirmBaja = async () => {
     if (insumoToBaja) {
-      bajaLogicaInsumo(insumoToBaja.id);
-      refresh();
+      await bajaLogicaInsumo(insumoToBaja.id);
+      await refresh();
       setInsumoToBaja(null);
       setBajaOpen(false);
     }
   };
 
-  const handleReactivar = (insumo: Insumo) => {
-    reactivarInsumo(insumo.id);
-    refresh();
+  const handleReactivar = async (insumo: Insumo) => {
+    await reactivarInsumo(insumo.id);
+    await refresh();
   };
 
-  const handleSave = (data: InsumoFormData) => {
+  const handleSave = async (data: InsumoFormData) => {
     if (selectedInsumo) {
-      updateInsumo(selectedInsumo.id, data);
+      await updateInsumo(selectedInsumo.id, data);
     } else {
-      createInsumo(data);
+      await createInsumo(data);
     }
-    refresh();
+    await refresh();
     setFormOpen(false);
     setSelectedInsumo(null);
   };
@@ -427,7 +442,9 @@ export function InsumosPage() {
         />
 
         {/* Pagination controls */}
-        {pagination.totalPages > 1 || filteredInsumos.length > 5 ? (
+        {loading ? (
+          <div className="p-8 text-center text-white/50 font-mono text-xs">Cargando datos del servidor...</div>
+        ) : pagination.totalPages > 1 || filteredInsumos.length > 5 ? (
           <PaginationControls
             page={pagination.page}
             totalPages={pagination.totalPages}

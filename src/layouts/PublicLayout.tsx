@@ -1,9 +1,23 @@
-import type { ReactNode } from "react";
+import { Outlet, useLocation } from "react-router";
+import { useEffect } from "react";
+import { Navbar } from "@/components/landing/Navbar";
+import { EditorialFooter } from "@/components/landing/EditorialFooter";
 
-interface PublicLayoutProps {
-  children: ReactNode;
-}
+export function PublicLayout() {
+  const { pathname } = useLocation();
 
-export function PublicLayout({ children }: PublicLayoutProps) {
-  return <>{children}</>;
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return (
+    <div className="relative bg-[#0B0B0B] overflow-x-hidden min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      <EditorialFooter />
+    </div>
+  );
 }

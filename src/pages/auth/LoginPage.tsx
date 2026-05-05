@@ -116,11 +116,14 @@ function LineInput({
 
 // ─── Main LoginPage ───────────────────────────────────────────────────────────
 export function LoginPage() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
+  const [isRegistering, setIsRegistering] = useState(false);
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
+  const [email, setEmail] = useState("");
+  const [nombre, setNombre] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -131,16 +134,34 @@ export function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!user.trim() || !pass.trim()) {
-      setError("Completá todos los campos.");
-      return;
+    
+    if (isRegistering) {
+        if (!user.trim() || !pass.trim() || !email.trim() || !nombre.trim()) {
+          setError("Completá todos los campos.");
+          return;
+        }
+    } else {
+        if (!user.trim() || !pass.trim()) {
+          setError("Completá todos los campos.");
+          return;
+        }
     }
+    
     setLoading(true);
     await new Promise((r) => setTimeout(r, 700));
-    const ok = login({ usernameOrEmail: user, password: pass });
+    
+    let ok = false;
+    
+    if (isRegistering) {
+        ok = await register({ username: user, email: email, password: pass, nombre: nombre });
+        if (!ok) setError("Error al registrarse. El usuario o email podría estar en uso.");
+    } else {
+        ok = await login({ usernameOrEmail: user, password: pass });
+        if (!ok) setError("Credenciales incorrectas. Verificá usuario y contraseña.");
+    }
+    
     setLoading(false);
     if (ok) navigate("/home", { replace: true });
-    else setError("Credenciales incorrectas. Verificá usuario y contraseña.");
   };
 
   return (
@@ -207,7 +228,7 @@ export function LoginPage() {
                 className="text-[10px] tracking-[0.4em] text-[#FF5A00]/60 uppercase"
                 style={{ fontFamily: "Space Mono, monospace" }}
               >
-                01 / Acceso
+                {isRegistering ? "02 / Registro" : "01 / Acceso"}
               </span>
             </div>
           </motion.div>
@@ -277,7 +298,7 @@ export function LoginPage() {
       <div className="hidden lg:block w-[1px] bg-gradient-to-b from-transparent via-white/[0.07] to-transparent" />
 
       {/* ── RIGHT FORM PANEL ─────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col relative bg-[#0c0c0c]">
+      <div className="flex-1 flex flex-col relative bg-[#0c0c0c] overflow-y-auto">
         {/* Grain */}
         <div
           className="absolute inset-0 pointer-events-none opacity-[0.03] z-0"
@@ -298,7 +319,7 @@ export function LoginPage() {
         </div>
 
         {/* Form content */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center px-10 md:px-16 max-w-sm mx-auto w-full">
+        <div className="relative z-10 flex-1 flex flex-col justify-center px-10 md:px-16 max-w-sm mx-auto w-full my-8">
 
           {/* Chapter marker */}
           <motion.div
@@ -309,16 +330,16 @@ export function LoginPage() {
           >
             <div className="flex items-center gap-3 mb-5">
               <span className="text-[9px] tracking-[0.45em] text-white/18 uppercase font-mono">
-                ──── Ingresar
+                ──── {isRegistering ? "Nuevo Usuario" : "Ingresar"}
               </span>
             </div>
             <h2
               className="text-3xl font-semibold text-[#F8F8F8] leading-tight"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Accedé al
-              <br />
-              <em style={{ fontStyle: "italic" }}>sistema.</em>
+              {isRegistering ? "Creá tu " : "Accedé al "}
+              <br className="hidden sm:block" />
+              <em style={{ fontStyle: "italic" }}>{isRegistering ? "cuenta." : "sistema."}</em>
             </h2>
           </motion.div>
 
@@ -330,8 +351,35 @@ export function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
+            <AnimatePresence mode="popLayout">
+                {isRegistering && (
+                    <motion.div
+                        key="register-fields"
+                        initial={{ opacity: 0, height: 0, filter: "blur(4px)" }}
+                        animate={{ opacity: 1, height: "auto", filter: "blur(0px)" }}
+                        exit={{ opacity: 0, height: 0, filter: "blur(4px)" }}
+                        transition={{ duration: 0.4 }}
+                        className="space-y-8"
+                    >
+                        <LineInput
+                          label="Nombre Completo"
+                          value={nombre}
+                          onChange={setNombre}
+                          autoComplete="name"
+                        />
+                        <LineInput
+                          label="Correo Electrónico"
+                          value={email}
+                          onChange={setEmail}
+                          autoComplete="email"
+                          type="email"
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <LineInput
-              label="Usuario o email"
+              label={isRegistering ? "Nombre de usuario" : "Usuario o email"}
               value={user}
               onChange={setUser}
               autoComplete="username"
@@ -342,7 +390,7 @@ export function LoginPage() {
               type={showPass ? "text" : "password"}
               value={pass}
               onChange={setPass}
-              autoComplete="current-password"
+              autoComplete={isRegistering ? "new-password" : "current-password"}
               rightSlot={
                 <button
                   type="button"
@@ -397,10 +445,10 @@ export function LoginPage() {
                     {loading ? (
                       <span className="flex items-center gap-3">
                         <span className="h-3 w-3 border border-white/40 border-t-white rounded-full animate-spin inline-block" />
-                        Verificando
+                        {isRegistering ? "Registrando" : "Verificando"}
                       </span>
                     ) : (
-                      "Ingresar"
+                      isRegistering ? "Registrarse" : "Ingresar"
                     )}
                   </span>
                   {!loading && (
@@ -415,12 +463,26 @@ export function LoginPage() {
                 </div>
               </motion.button>
             </div>
+            
+            {/* Toggle Login/Register */}
+            <div className="pt-4 text-center">
+                <button 
+                    type="button" 
+                    onClick={() => {
+                        setIsRegistering(!isRegistering);
+                        setError("");
+                    }}
+                    className="text-[10px] tracking-[0.2em] text-white/40 hover:text-white/80 uppercase font-mono transition-colors"
+                >
+                    {isRegistering ? "¿Ya tenés cuenta? Ingresá acá" : "¿No tenés cuenta? Registrate acá"}
+                </button>
+            </div>
           </motion.form>
         </div>
 
         {/* Bottom: credentials */}
         <motion.div
-          className="relative z-10 px-10 md:px-16 py-8 max-w-sm mx-auto w-full"
+          className="relative z-10 px-10 md:px-16 py-8 max-w-sm mx-auto w-full mt-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.9 }}

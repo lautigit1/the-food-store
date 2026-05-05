@@ -1,4 +1,4 @@
-import type { AuthUser, LoginCredentials } from "../types/auth.types";
+import type { AuthUser, LoginCredentials, RegisterCredentials } from "../types/auth.types";
 import { MOCK_CREDENTIALS, MOCK_USERS } from "../data/authMock";
 
 const STORAGE_KEY = "the_food_store_session";
@@ -35,27 +35,51 @@ function clearSession(): void {
  * Intenta iniciar sesión. Almacena la sesión con timestamp de expiración.
  * Retorna el usuario si las credenciales son válidas, null si no.
  */
-export function login(credentials: LoginCredentials): AuthUser | null {
-  const { usernameOrEmail, password } = credentials;
-  const expectedPassword = MOCK_CREDENTIALS[usernameOrEmail];
+import { fetchApi } from "@/shared/api/apiClient";
 
-  if (!expectedPassword || expectedPassword !== password) {
+export async function login(credentials: LoginCredentials): Promise<AuthUser | null> {
+  try {
+    const response = await fetchApi<{ success: boolean; message: string; user: AuthUser }>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(credentials)
+    });
+
+    if (response.success && response.user) {
+      const session: StoredSession = {
+        user: response.user,
+        expiresAt: Date.now() + SESSION_DURATION_MS,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      return response.user;
+    }
     return null;
+  } catch (error) {
+    console.error("Login failed:", error);
+    throw error;
   }
+}
 
-  const user = MOCK_USERS.find(
-    (u) => u.username === usernameOrEmail || u.email === usernameOrEmail
-  );
-
-  if (!user) return null;
-
-  const session: StoredSession = {
-    user,
-    expiresAt: Date.now() + SESSION_DURATION_MS,
-  };
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-  return user;
+export async function register(credentials: RegisterCredentials): Promise<AuthUser | null> {
+  try {
+    const user = await fetchApi<AuthUser>("/auth/register", {
+      method: "POST",
+      body: JSON.stringify(credentials)
+    });
+    
+    if (user && user.id) {
+        // Log in the user right after registration
+        const session: StoredSession = {
+            user: user,
+            expiresAt: Date.now() + SESSION_DURATION_MS,
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+        return user;
+    }
+    return null;
+  } catch (error) {
+    console.error("Register failed:", error);
+    throw error;
+  }
 }
 
 /**
