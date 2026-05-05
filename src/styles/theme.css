@@ -198,12 +198,8 @@
     line-height: 1.5;
   }
 
-  * {
-    cursor: none !important;
-  }
-
-  a, button, input, textarea, select {
-    cursor: none !important;
+  a, button {
+    cursor: pointer;
   }
 
   ::selection {

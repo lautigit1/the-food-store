@@ -93,7 +93,6 @@ export function ProductShowcase() {
                   {activeIndex === index && (
                     <motion.div
                       className="absolute left-0 top-0 bottom-0 w-[3px]"
-                      style={{ background: product.accent }}
                       initial={{ scaleY: 0 }}
                       animate={{ scaleY: 1 }}
                       exit={{ scaleY: 0 }}

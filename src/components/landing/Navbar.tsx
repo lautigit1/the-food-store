@@ -1,22 +1,25 @@
 import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router";
+import { LogIn } from "lucide-react";
 
-// ─── Marquee ticker ──────────────────────────────────────────────────────────
+// ─── Historical ticker ──────────────────────────────────────────────────────
 const TICKER_TEXT =
-  "THE FOOD STORE · EST. 2026 · NUEVA YORK · HECHO CON ARTE · CADA BOCADO CUENTA UNA HISTORIA · ";
+  "ARCHIVUM GASTRONOMICUM ✦ THE FOOD STORE ✦ FOLIO I ✦ FUEGO ✦ SAL ✦ PAN ✦ VINO ✦ OFICIO ✦ SABOR ✦ ";
 
 function Ticker() {
   return (
-    <div className="fixed top-0 left-0 right-0 z-[200] h-7 bg-[#FF5A00] overflow-hidden flex items-center">
+    <div className="fixed top-0 left-0 right-0 z-[200] h-7 overflow-hidden flex items-center" style={{ background: "#8B1E16" }}>
       <motion.div
         className="flex gap-0 whitespace-nowrap"
         animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 38, repeat: Infinity, ease: "linear" }}
       >
         {[...Array(4)].map((_, i) => (
           <span
             key={i}
-            className="text-[10px] tracking-[0.35em] uppercase text-white font-mono px-2"
+            className="text-[10px] tracking-[0.45em] uppercase px-3"
+            style={{ color: "#E8D8B8", fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}
           >
             {TICKER_TEXT}
           </span>
@@ -333,6 +336,32 @@ export function Navbar() {
         transition={{ duration: 0.6, delay: 0.4 }}
       >
         <OrbitalButton open={open} onClick={() => setOpen(!open)} />
+      </motion.div>
+
+      {/* Panel login button — histórico */}
+      <motion.div
+        className="fixed top-[38px] right-28 z-[200]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
+      >
+        <Link
+          to="/login"
+          className="group flex items-center gap-2 px-4 py-1.5 transition-all duration-300"
+          style={{
+            border: "1px solid rgba(198,154,58,0.35)",
+          }}
+          onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(198,154,58,0.8)")}
+          onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(198,154,58,0.35)")}
+        >
+          <LogIn size={11} style={{ color: "rgba(198,154,58,0.8)" }} />
+          <span
+            className="text-[10px] tracking-[0.35em] uppercase transition-colors"
+            style={{ color: "rgba(198,154,58,0.6)", fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}
+          >
+            Panel
+          </span>
+        </Link>
       </motion.div>
 
       {/* Full screen overlay */}

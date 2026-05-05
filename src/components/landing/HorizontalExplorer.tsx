@@ -1,4 +1,4 @@
-import { motion, useMotionValue, useTransform, animate } from "motion/react";
+import { motion } from "motion/react";
 import { useRef, useState, useEffect } from "react";
 
 const items = [
