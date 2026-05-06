@@ -2,14 +2,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from app.core.config import settings
 
-# In SQLite, checking same thread is needed if we want to share connections. 
-# FastAPI handles concurrency nicely, but for SQLite we must pass check_same_thread=False
+# SQLite requires check_same_thread=False; PostgreSQL doesn't need it
 connect_args = {"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {}
 
-engine = create_engine(
-    settings.DATABASE_URL, 
-    connect_args=connect_args
-)
+engine = create_engine(settings.DATABASE_URL, connect_args=connect_args)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
