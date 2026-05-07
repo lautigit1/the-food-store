@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.modules.insumos.repository import InsumoRepository
 from app.modules.auth.repository import UserRepository
+from app.modules.categorias.repository import CategoriaRepository
 
 class UnitOfWork:
     def __init__(self, session_factory=SessionLocal):
@@ -10,9 +11,9 @@ class UnitOfWork:
 
     def __enter__(self):
         self.db = self.session_factory()
-        # Initialize repositories
         self.insumos = InsumoRepository(self.db)
         self.users = UserRepository(self.db)
+        self.categorias = CategoriaRepository(self.db)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):

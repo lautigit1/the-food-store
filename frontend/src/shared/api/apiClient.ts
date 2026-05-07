@@ -1,11 +1,20 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
+// Importación lazy para evitar dependencia circular — authService importa fetchApi,
+// fetchApi necesita getToken de authService.
+function getStoredToken(): string | null {
+  return localStorage.getItem("the_food_store_token");
+}
+
 export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_URL}${endpoint}`;
-  
+
+  const token = getStoredToken();
+
   const defaultHeaders: HeadersInit = {
     "Content-Type": "application/json",
-    "Accept": "application/json"
+    "Accept": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
   const response = await fetch(url, {
@@ -27,11 +36,10 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
     throw new Error(errorMessage);
   }
 
-  // Some endpoints like 204 No Content might not return JSON
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.includes("application/json")) {
     return response.json() as Promise<T>;
   }
-  
+
   return {} as T;
 }

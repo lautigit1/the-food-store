@@ -10,23 +10,7 @@ from app.modules.insumos.models import InsumoModel
 from app.shared.unit_of_work import UnitOfWork
 from app.modules.auth.utils import get_password_hash
 
-SEED_DATA_INSUMOS = [
-    {"nombre": "Harina 000", "descripcion": "Harina refinada", "categoria": "Materia prima", "unidad_medida": "kg", "stock_actual": 50, "stock_minimo": 10, "precio_unitario": 800, "estado": "Activo"},
-    {"nombre": "Pan brioche", "descripcion": "Pan de hamburguesa artesanal", "categoria": "Panificados", "unidad_medida": "unidad", "stock_actual": 100, "stock_minimo": 20, "precio_unitario": 350, "estado": "Activo"},
-    {"nombre": "Carne molida premium", "descripcion": "Roast beef picado", "categoria": "Carnes", "unidad_medida": "kg", "stock_actual": 30, "stock_minimo": 5, "precio_unitario": 6500, "estado": "Activo"},
-    {"nombre": "Queso cheddar", "descripcion": "Fetas de cheddar", "categoria": "Lácteos", "unidad_medida": "kg", "stock_actual": 15, "stock_minimo": 3, "precio_unitario": 8000, "estado": "Activo"},
-    {"nombre": "Café en grano", "descripcion": "Café tostado colombiano", "categoria": "Café", "unidad_medida": "kg", "stock_actual": 5, "stock_minimo": 2, "precio_unitario": 15000, "estado": "Activo"},
-    {"nombre": "Leche", "descripcion": "Leche entera", "categoria": "Lácteos", "unidad_medida": "l", "stock_actual": 40, "stock_minimo": 10, "precio_unitario": 1100, "estado": "Activo"},
-    {"nombre": "Tomate", "descripcion": "Tomate redondo", "categoria": "Verduras", "unidad_medida": "kg", "stock_actual": 12, "stock_minimo": 4, "precio_unitario": 2000, "estado": "Activo"},
-    {"nombre": "Lechuga", "descripcion": "Lechuga repollada", "categoria": "Verduras", "unidad_medida": "kg", "stock_actual": 8, "stock_minimo": 2, "precio_unitario": 1500, "estado": "Activo"},
-    {"nombre": "Aceite de oliva", "descripcion": "Aceite extra virgen", "categoria": "Materia prima", "unidad_medida": "l", "stock_actual": 10, "stock_minimo": 3, "precio_unitario": 9000, "estado": "Activo"},
-    {"nombre": "Chocolate", "descripcion": "Cobertura semi amarga", "categoria": "Repostería", "unidad_medida": "kg", "stock_actual": 7, "stock_minimo": 2, "precio_unitario": 12000, "estado": "Activo"},
-    {"nombre": "Azúcar", "descripcion": "Azúcar blanca", "categoria": "Materia prima", "unidad_medida": "kg", "stock_actual": 20, "stock_minimo": 5, "precio_unitario": 900, "estado": "Activo"},
-    {"nombre": "Sal marina", "descripcion": "Sal gruesa", "categoria": "Condimentos", "unidad_medida": "kg", "stock_actual": 10, "stock_minimo": 2, "precio_unitario": 1200, "estado": "Activo"},
-    {"nombre": "Envases descartables", "descripcion": "Cajas de cartón para delivery", "categoria": "Packaging", "unidad_medida": "caja", "stock_actual": 500, "stock_minimo": 100, "precio_unitario": 150, "estado": "Activo"},
-    {"nombre": "Papas congeladas", "descripcion": "Papas corte bastón", "categoria": "Materia prima", "unidad_medida": "kg", "stock_actual": 60, "stock_minimo": 15, "precio_unitario": 2200, "estado": "Activo"},
-    {"nombre": "Salsa barbacoa", "descripcion": "Salsa BBQ casera", "categoria": "Condimentos", "unidad_medida": "l", "stock_actual": 5, "stock_minimo": 2, "precio_unitario": 4000, "estado": "Activo"}
-]
+SEED_DATA_INSUMOS = []
 
 SEED_DATA_USERS = [
     {

@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router";
-import { LayoutDashboard, Package, LogOut, ChefHat, X, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Package, LogOut, ChefHat, X, ArrowLeft, Tag, Users } from "lucide-react";
 import type { AuthUser } from "@/features/auth/types/auth.types";
-import { logout } from "@/features/auth/services/authService";
+import { logout, getCurrentUser } from "@/features/auth/services/authService";
 
 interface AdminSidebarProps {
   user: AuthUser;
@@ -9,13 +9,20 @@ interface AdminSidebarProps {
   onClose: () => void;
 }
 
-const NAV_ITEMS = [
-  { to: "/home",    label: "Dashboard", icon: LayoutDashboard, code: "01" },
-  { to: "/insumos", label: "Insumos",   icon: Package,         code: "02" },
+const ALL_NAV_ITEMS = [
+  { to: "/home",       label: "Dashboard",  icon: LayoutDashboard, code: "01", roles: ["Admin", "Encargado"] },
+  { to: "/insumos",    label: "Insumos",    icon: Package,         code: "02", roles: ["Admin", "Encargado"] },
+  { to: "/categorias", label: "Categorías", icon: Tag,             code: "03", roles: ["Admin", "Encargado"] },
+  { to: "/usuarios",   label: "Usuarios",   icon: Users,           code: "04", roles: ["Admin"] },
 ];
+
 
 export function AdminSidebar({ user, isOpen, onClose }: AdminSidebarProps) {
   const navigate = useNavigate();
+  const currentUser = getCurrentUser();
+  const NAV_ITEMS = ALL_NAV_ITEMS.filter(
+    (item) => !currentUser || item.roles.includes(currentUser.rol)
+  );
 
   const handleLogout = () => {
     logout();

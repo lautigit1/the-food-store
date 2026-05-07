@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from app.core.database import Base
 
 class UserModel(Base):
@@ -10,3 +10,4 @@ class UserModel(Base):
     hashed_password = Column(String, nullable=False)
     nombre = Column(String, nullable=False)
     rol = Column(String, nullable=False, default="Encargado")
+    activo = Column(Boolean, default=True, nullable=False)

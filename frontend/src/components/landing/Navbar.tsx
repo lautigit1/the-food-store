@@ -2,6 +2,7 @@ import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import { LogIn } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 // ─── Historical ticker ──────────────────────────────────────────────────────
 const TICKER_TEXT =
@@ -213,6 +214,7 @@ const NAV_ITEMS = ["Menu", "About", "Experience", "Reservations", "Contact"];
 
 function FullScreenMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const { isAuthenticated, logout } = useAuth();
 
   const activeBg = hoveredItem ? PANEL_COLORS[hoveredItem] : "#0B0B0B";
 
@@ -268,7 +270,15 @@ function FullScreenMenu({ open, onClose }: { open: boolean; onClose: () => void 
                 <p className="text-[10px] tracking-[0.4em] text-white/30 uppercase font-mono mb-1">
                   Ubicación
                 </p>
-                <p className="text-sm text-white/60 font-mono">Nueva York, NY</p>
+                <p className="text-sm text-white/60 font-mono">Buenos Aires, BSAS</p>
+                {isAuthenticated && (
+                  <button 
+                    onClick={() => { logout(); onClose(); }}
+                    className="text-[10px] tracking-[0.2em] text-red-400/80 hover:text-red-300 uppercase font-mono mt-4 transition-colors"
+                  >
+                    [ Cerrar sesión ]
+                  </button>
+                )}
               </div>
               <div className="flex gap-6">
                 {["IG", "TW", "FB"].map((s) => (

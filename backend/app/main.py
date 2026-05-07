@@ -4,6 +4,7 @@ from app.core.config import settings
 from app.core.database import create_tables
 from app.modules.auth.router import router as auth_router
 from app.modules.insumos.router import router as insumos_router
+from app.modules.categorias.router import router as categorias_router
 
 # Ensure tables are created
 create_tables()
@@ -31,6 +32,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(auth_router)
 app.include_router(insumos_router)
+app.include_router(categorias_router)
 
 @app.get("/", tags=["Health"])
 def root():

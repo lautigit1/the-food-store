@@ -1,9 +1,11 @@
+export type UserRole = "Admin" | "Encargado" | "Cliente";
+
 export interface AuthUser {
   id: number;
   username: string;
   email: string;
   nombre: string;
-  rol: string;
+  rol: UserRole;
 }
 
 export interface LoginCredentials {

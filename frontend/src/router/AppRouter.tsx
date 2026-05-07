@@ -13,6 +13,8 @@ import { TermsPage } from "@/pages/public/TermsPage";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { DashboardPage } from "@/pages/dashboard/DashboardPage";
 import { InsumosPage } from "@/pages/insumos/InsumosPage";
+import { CategoriasPage } from "@/pages/categorias/CategoriasPage";
+import { UsuariosPage } from "@/pages/usuarios/UsuariosPage";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -47,6 +49,15 @@ export function AppRouter() {
       >
         <Route path="/home" element={<DashboardPage />} />
         <Route path="/insumos" element={<InsumosPage />} />
+        <Route path="/categorias" element={<CategoriasPage />} />
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <UsuariosPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       {/* Fallback */}
